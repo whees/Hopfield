@@ -8,10 +8,6 @@ import pygame
 from numpy import tanh
 
 
-def invert(color):
-    return tuple(255 - c for c in color)
-
-
 class Hopfield:
     def __init__(self, length=100):
         self.length = length
@@ -53,8 +49,10 @@ class Hopfield:
 
 class GUI:
     bg_col = (0, 0, 0)
-    mode_col = (255, 0, 0)
+    recall_col = (255, 0, 0)
     draw_col = (0, 255, 0)
+    pen_col = (255, 255, 0)
+    erase_col = (255, 0, 255)
 
     def __init__(self, length=16, cell_size=64):
         pygame.init()
@@ -126,13 +124,13 @@ class GUI:
                              (right, left, self.cell_size, self.cell_size))
 
         if self.erase:
-            erase = self.font.render('eraser', True, self.draw_col)
+            erase = self.font.render('eraser', True, self.erase_col)
         else:
-            erase = self.font.render('pen', True, invert(self.draw_col))
+            erase = self.font.render('pen', True, self.pen_col)
         if self.recall_mode:
-            recall = self.font.render('recall', True, self.mode_col)
+            recall = self.font.render('recall', True, self.recall_col)
         else:
-            recall = self.font.render('draw', True, invert(self.mode_col))
+            recall = self.font.render('draw', True, self.draw_col)
 
         recall_rect = recall.get_rect()
         erase_rect = erase.get_rect()
