@@ -8,6 +8,10 @@ import pygame
 from numpy import tanh
 
 
+def invert(color):
+    return tuple(255 - c for c in color)
+
+
 class Hopfield:
     def __init__(self, length=100):
         self.length = length
@@ -49,12 +53,15 @@ class Hopfield:
 
 class GUI:
     bg_col = (0, 0, 0)
-    pen_col = (255, 255, 255)
+    mode_col = (255, 0, 0)
+    draw_col = (0, 255, 0)
 
     def __init__(self, length=16, cell_size=64):
         pygame.init()
+        self.width = length * cell_size
         self.surface = pygame.display.set_mode(
-            (length * cell_size,) * 2)
+            (self.width, self.width))
+        self.font = pygame.font.Font('CascadiaMono.ttf', 32)
         self.length = length
         self.area = length ** 2
         self.cell_size = cell_size
@@ -117,6 +124,22 @@ class GUI:
             color = 255 * (self.cells[index] + 1) // 2
             pygame.draw.rect(self.surface, (color, color, color),
                              (right, left, self.cell_size, self.cell_size))
+
+        if self.erase:
+            erase = self.font.render('eraser', True, self.draw_col)
+        else:
+            erase = self.font.render('pen', True, invert(self.draw_col))
+        if self.recall_mode:
+            recall = self.font.render('recall', True, self.mode_col)
+        else:
+            recall = self.font.render('draw', True, invert(self.mode_col))
+
+        recall_rect = recall.get_rect()
+        erase_rect = erase.get_rect()
+        recall_rect.topleft = (5, 0)
+        erase_rect.topright = (self.width - 6, 0)
+        self.surface.blit(recall, recall_rect)
+        self.surface.blit(erase, erase_rect)
         pygame.display.update()
 
     def loop(self):
