@@ -3,7 +3,7 @@
 - Pygame
 ## Use
 - When the program is run, a blank canvas will appear.
-- Draw anything, have the model memorize it, then it can be recalled from future drawings
+- Draw anything, have the model memorize it, then it can be recalled from future drawings.
 - While recall mode is on, input will not be accepted and the model will continuously update. 
 ## Controls
 | Key        | Function      |
