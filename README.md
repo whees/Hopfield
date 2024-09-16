@@ -9,6 +9,7 @@
 | Key        | Function      |
 | ---------- | ------------- |
 | left mouse | pen up/down   |
-| e          | toggle eraser |
+| e          | eraser toggle |
 | m          | memorize      |
-| r          | toggle recall |
+| r          | recall toggle |
+| c          | clear screen  |
