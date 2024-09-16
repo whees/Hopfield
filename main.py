@@ -9,7 +9,7 @@ from numpy import tanh
 
 
 class Hopfield:
-    def __init__(self, length=100):
+    def __init__(self, length=16**2):
         self.length = length
         self.area = self._flatten_(length)
         self.cells = [0 for c in range(length)]
@@ -29,8 +29,10 @@ class Hopfield:
     def _flatten_(self, left, right=0):
         return left * (left - 1) // 2 + right
 
-    def _activate_(self, value):
-        return tanh(value)
+    def _activate_(self, input):
+        for i in range(self.length):
+            input[i] = tanh(input[i])
+        return input
 
     def memorize(self, output):
         for key, value in self.dict.items():
@@ -38,23 +40,21 @@ class Hopfield:
             self.weights[key] += output[left] * output[right]
 
     def recall(self, input, rate=2**-7):
-        copy = [input[i] for i in range(self.length)]
         for key, value in self.dict.items():
             left, right = value
-            copy[left] += self.weights[key] * input[right] * rate
-            copy[right] += self.weights[key] * input[left] * rate
+            input[left] += self.weights[key] * input[right] * rate
+            input[right] += self.weights[key] * input[left] * rate
 
-        return [self._activate_(copy[i]) for i in range(self.length)]
+        return self._activate_(input)
 
 
 class GUI:
     bg_col = (0, 0, 0)
     recall_col = (255, 0, 0)
-    draw_col = (0, 255, 0)
     pen_col = (255, 255, 0)
     erase_col = (255, 0, 255)
 
-    def __init__(self, length=16, cell_size=64):
+    def __init__(self, length=16, cell_size=32):
         pygame.init()
         self.width = length * cell_size
         self.surface = pygame.display.set_mode(
@@ -123,21 +123,17 @@ class GUI:
             pygame.draw.rect(self.surface, (color, color, color),
                              (right, left, self.cell_size, self.cell_size))
 
-        if self.erase:
-            erase = self.font.render('eraser', True, self.erase_col)
-        else:
-            erase = self.font.render('pen', True, self.pen_col)
         if self.recall_mode:
-            recall = self.font.render('recall', True, self.recall_col)
+            mode = self.font.render('recall', True, self.recall_col)
         else:
-            recall = self.font.render('draw', True, self.draw_col)
+            if self.erase:
+                mode = self.font.render('eraser', True, self.erase_col)
+            else:
+                mode = self.font.render('pen', True, self.pen_col)
 
-        recall_rect = recall.get_rect()
-        erase_rect = erase.get_rect()
-        recall_rect.topleft = (5, 0)
-        erase_rect.topright = (self.width - 6, 0)
-        self.surface.blit(recall, recall_rect)
-        self.surface.blit(erase, erase_rect)
+        mode_rect = mode.get_rect()
+        mode_rect.topleft = (5, 0)
+        self.surface.blit(mode, mode_rect)
         pygame.display.update()
 
     def loop(self):
